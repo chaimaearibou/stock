@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
-use App\Models\Product;
-use App\Models\Supplier;
-use App\Models\Category;
-use App\Models\Store;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
 use App\Models\User;
-
-use Illuminate\Support\Facades\Cookie;
+use App\Models\Store;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Customer;
+use App\Models\Supplier;
+use Illuminate\View\View;
 use Illuminate\Support\Str;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
 
-        $user = User::find(1); //cherche l'utilisateur dont le id est 1
-        return view('dashboard',['pic'=>$user->avatar]);
+        $user = User::find(1);
+        return view('dashboard',['user' => Auth::user()]);
 
     }
 
@@ -86,34 +87,6 @@ class DashboardController extends Controller
     }
 
 
-   public function saveCookie()
-   {
-      $name = request()->input("txtCookie");
-      //Cookie::put("UserName",$name,6000000);
-      Cookie::queue("UserName",$name,6000000);
-      return redirect()->back();
-   }
-
-
-   public function saveSession(Request $request)
-   {
-            $name = $request->input("txtSession");
-            $request->session()->put('SessionName', $name);
-            return redirect()->back();
-   }
-   public function saveAvatar()
-   {
-
-    request()->validate([
-        'avatarFile'=>'required|image',
-            ]);
-    $ext = request()->avatarFile->getClientOriginalExtension();
-    $name = Str::random(30).time().".".$ext;
-    request()->avatarFile->move(public_path('storage/avatars'),$name);
-    $user = User::find(1);
-    $user->update(['avatar'=>$name]);
-    return redirect()->back();
-   }
 
 
 }

@@ -24,7 +24,6 @@ class ProductController extends Controller
             ->when(request('search'), function($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");
-                 //   ->orWhere('code', 'like', "%{$search}%");
             })
             ->paginate(10);
 
@@ -69,17 +68,11 @@ class ProductController extends Controller
             ->with('success', 'Product created successfully.');
     }
 
-    /**
-     * Display the specified product.
-     */
     public function show(Product $product)
     {
         return response()->json($product);
     }
 
-    /**
-     * Update the specified product in storage.
-     */
     public function update(ProductRequest $request, Product $product)
     {
         $validated = $request->validated();
@@ -105,9 +98,6 @@ class ProductController extends Controller
             ->with('success', 'Product updated successfully.');
     }
 
-    /**
-     * Remove the specified product from storage.
-     */
     public function destroy(Product $product)
     {
         // Delete product image if exists

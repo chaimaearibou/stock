@@ -42,7 +42,7 @@
     <div class="header">
         <h1>Vérification de votre adresse e-mail</h1>
     </div>
-    
+        
     <div class="content">
         <p>Bonjour {{ $user->name }},</p>
         

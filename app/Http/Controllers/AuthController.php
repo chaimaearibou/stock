@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Mail\ResetPassword;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\EmailVerification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use DragonCode\Support\Facades\Helpers\Str;
 
 class AuthController extends Controller
 {
@@ -23,7 +24,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // Process login
+    //  login
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -49,29 +50,33 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    // Process registration
-    public function register(Request $request)
-    {
-        $request->validate([
+    //  registre function
+   public function register(Request $request)
+{
+    try {
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:8|confirmed',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'is_active' => false, // User is inactive until email verification
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'is_active' => false,
             'email_verification_token' => Str::random(60),
         ]);
 
-        // Send verification email
-        Mail::to($user->email)->send(new EmailVerification($user));
+        // Mail::to($user->email)->send(new EmailVerification($user));
+        
+        return redirect()->route('verification.notice');
 
-        return redirect()->route('verification.notice')->with('status', 'Un lien de vérification a été envoyé à votre adresse e-mail.');
+    } catch (\Exception $e) {
+        Log::error("Registration Error: " . $e->getMessage());
+        return back()->withInput()->withErrors(['error' => 'Registration failed. Please try again.']);
     }
-
+}
     // Show verification notice
     public function verificationNotice()
     {
@@ -101,7 +106,7 @@ class AuthController extends Controller
         return view('auth.forgot-password');
     }
 
-    // Process forgot password
+    //  forgot password
     public function forgotPassword(Request $request)
     {
         $request->validate([
@@ -136,7 +141,7 @@ class AuthController extends Controller
         return view('auth.reset-password', ['token' => $token, 'email' => $email]);
     }
 
-    // Process reset password
+    //  reset password
     public function resetPassword(Request $request)
     {
         $request->validate([

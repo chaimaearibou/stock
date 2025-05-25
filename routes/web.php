@@ -22,9 +22,7 @@ Route::get('/changeLocale/{locale}', function (string $locale) {
      }
     return redirect()->back();
 });
-
-
-// Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/customers', [DashboardController::class, 'customers'])->name('customers.index');
 Route::get('/suppliers', [DashboardController::class, 'suppliers'])->name('suppliers.index');
 // Product routes
@@ -40,7 +38,7 @@ Route::get('/products-by-category/{category}', [CategoryController::class, 'getP
 Route::get('/products-by-supplier', [DashboardController::class, 'productsBySupplier'])->name('products.by.supplier');
 Route::get('/api/products-by-supplier/{supplier}', [DashboardController::class, 'getProductsBySupplier'])->name('api.products.by.supplier');
 //* le lien pour ajouter suppliers
-Route::get('/suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');  //ce lien deriger au forme d'ajouter supplier
+Route::get('/suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');  
 Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');  
 
 Route::get('/suppliers/{supplier}/edit',[SupplierController::class,'edit'])->name('suppliers.edit');
@@ -68,8 +66,6 @@ Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->
 
 // Customer search API route
 Route::get('/api/customers/search', [CustomerController::class, 'search'])->name('customers.search');
-// Customer search API route
-Route::get('/api/customers/search/{term}', [CustomerController::class, 'searchTerm'])->name('customers.search.term');
 
 // Customer orders API route
 Route::get('/api/customers/{customer}/orders', [OrderController::class, 'getCustomerOrders'])->name('customers.orders');
@@ -77,22 +73,17 @@ Route::get('/api/customers/{customer}/orders', [OrderController::class, 'getCust
 // Order details route
 Route::get('/api/orders/{order}/details', [OrderController::class, 'getOrderDetails'])->name('orders.details');
 
-
-Route::post("/saveCookie", [DashboardController::class, 'saveCookie'])->name("saveCookie");
-Route::post("/saveSession", [DashboardController::class, 'saveSession'])->name("saveSession");
-Route::post("/saveAvatar", [DashboardController::class, 'saveAvatar'])->name("saveAvatar");
-
 Route::get('products-export', [ProductController::class, 'export'])->name('products.export');
 Route::post('products-import', [ProductController::class, 'import'])->name('products.import');
 
 // Authentication Routes
-Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');;
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Registration Routes
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register/submit', [AuthController::class, 'register'])->name('register.submit');
 
 
 // Email Verification Routes
@@ -111,14 +102,4 @@ Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.
 Route::put('/password', [AuthController::class, 'updatePassword'])->name('password.change');
 
 // Dashboard Route
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
-
-// Test Mail Route
-// Route::get('/testmail', function() {
-//     $name = "ismo developpers";
-
-//     // The email sending is done using the to method on the Mail facade
-//     Mail::to('ousrah@hotmail.com')->send(new MyTestMail($name));
-//     return 'mail envoyé avec success';
-// });
-
+// Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');

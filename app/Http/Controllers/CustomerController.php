@@ -38,14 +38,6 @@ class CustomerController extends Controller
     {
         // The request is automatically validated by the CustomerRequest class
         Customer::create($request->validated());
-
-
-
-
-//envoi de l'email
-Mail::to($request->email)->send(new MyMailer($request->first_name . ' ' . $request->last_name));
-
-
         return redirect()->route('customers.index')
             ->with('success', 'Customer created successfully.');
     }
@@ -63,7 +55,6 @@ Mail::to($request->email)->send(new MyMailer($request->first_name . ' ' . $reque
      */
     public function update(CustomerRequest $request, Customer $customer): RedirectResponse
     {
-        // The request is automatically validated by the CustomerRequest class
         $customer->update($request->validated());
 
         return redirect()->route('customers.index')
@@ -90,26 +81,11 @@ Mail::to($request->email)->send(new MyMailer($request->first_name . ' ' . $reque
     }
 
     /**
-     * Search for customers by name, email, phone or address.
-     */
-    public function searchTerm(Request $request, $term)
-    {
-
-        $customers = Customer::where('first_name', 'like', "%{$term}%")
-            ->orWhere('last_name', 'like', "%{$term}%")
-            ->orWhere('email', 'like', "%{$term}%")
-            ->orWhere('phone', 'like', "%{$term}%")
-            ->orWhere('address', 'like', "%{$term}%")
-            ->get();
-
-        return response()->json($customers);
-    }
-  /**
-     * Search for customers by name, email, phone or address.
+     * Search for customers
      */
     public function search(Request $request)
     {
-$term = $request->input('term');
+        $term = $request->input('term');
         $customers = Customer::where('first_name', 'like', "%{$term}%")
             ->orWhere('last_name', 'like', "%{$term}%")
             ->orWhere('email', 'like', "%{$term}%")

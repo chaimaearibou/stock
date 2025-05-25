@@ -44,7 +44,7 @@ class ProductImport implements ToModel, WithHeadingRow, WithValidation
             $parts = explode(' ', trim($fullName), 2);
 
             $firstName = $parts[0] ?? '';
-            $lastName = $parts[1] ?? $parts[0]; // Si pas de nom de famille, utiliser le même que prénom
+            $lastName = $parts[1] ?? $parts[0]; 
 
             $supplier = Supplier::create([
                 'first_name' => $firstName,
@@ -72,11 +72,11 @@ class ProductImport implements ToModel, WithHeadingRow, WithValidation
     public function rules(): array
     {
         return [
-            // 'name' => 'required|min:5|max:255',
-            // 'description' => 'required|min:5',
-            // 'price' => 'required',
-            // 'supplier'=> 'required',
-            // 'category'=> 'required'
+            'name' => 'required|min:5|max:255',
+            'description' => 'required|min:5',
+            'price' => 'required',
+            'supplier'=> 'required',
+            'category'=> 'required'
         ];
     }
 
