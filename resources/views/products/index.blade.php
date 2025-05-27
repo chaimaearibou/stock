@@ -12,6 +12,8 @@
                     data-bs-target="#importProductModal">
                     <i class="fa fa-file"></i> Import
                 </button>
+                <a class="btn btn-info" href="{{ route('products.print') }}" target="_blank"><i class="fa fa-print"></i>
+                    Print</a>
             </div>
 
             <div class="d-flex gap-2">
@@ -260,7 +262,6 @@
                 }
             });
         });
-
         // Handle delete product button click
         $('.delete-product').on('click', function() {
             let productId = $(this).data('id');

@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use Mpdf\Mpdf;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\ProductRequest;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\Request;
 use App\Exports\ProductExport;
 use App\Imports\ProductImport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\ProductRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+
 class ProductController extends Controller
 {
     /**
@@ -127,5 +130,21 @@ class ProductController extends Controller
         Excel::import(new ProductImport, $request->file('file'));
 
         return back()->with('success', 'Products imported successfully.');
+    }
+
+    // * la fonction pour la import de pdf 
+       public function print()
+    {
+        $user = User::find(1); // Get the authenticated user
+        $products = Product::with(['category', 'supplier', 'stock'])->get();
+        $data = [
+            'products' => $products,
+            'user' => $user 
+        ];
+
+        $mpdf = new Mpdf();
+        $html = view('products.print_pdf', $data)->render();
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('products.pdf', 'I'); 
     }
 }

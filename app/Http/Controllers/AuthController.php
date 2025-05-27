@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -24,7 +25,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    //  login
+    // Process login
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -50,33 +51,28 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    //  registre function
-   public function register(Request $request)
-{
-    try {
-        $validated = $request->validate([
+    // Process registration
+    public function register(Request $request)
+    {
+        $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
         ]);
+        
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'is_active' => false,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'is_active' => false, 
             'email_verification_token' => Str::random(60),
         ]);
 
-        // Mail::to($user->email)->send(new EmailVerification($user));
-        
-        return redirect()->route('verification.notice');
-
-    } catch (\Exception $e) {
-        Log::error("Registration Error: " . $e->getMessage());
-        return back()->withInput()->withErrors(['error' => 'Registration failed. Please try again.']);
+        Mail::to($user->email)->send(new EmailVerification($user));
+        return redirect()->route('verification.notice')->with('status', 'Un lien de vérification a été envoyé à votre adresse e-mail.');
     }
-}
+
     // Show verification notice
     public function verificationNotice()
     {
@@ -89,7 +85,7 @@ class AuthController extends Controller
         $user = User::where('email_verification_token', $token)->first();
 
         if (!$user) {
-            return redirect()->route('login')->with('error', 'Le lien de vérification est invalide.');
+            return redirect()->route('login.form')->with('error', 'Le lien de vérification est invalide.');
         }
 
         $user->email_verified_at = now();
@@ -97,7 +93,7 @@ class AuthController extends Controller
         $user->is_active = true;
         $user->save();
 
-        return redirect()->route('login')->with('status', 'Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter.');
+        return redirect()->route('login.form')->with('status', 'Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter.');
     }
 
     // Show forgot password form
@@ -106,7 +102,7 @@ class AuthController extends Controller
         return view('auth.forgot-password');
     }
 
-    //  forgot password
+    // Process forgot password
     public function forgotPassword(Request $request)
     {
         $request->validate([
@@ -141,7 +137,7 @@ class AuthController extends Controller
         return view('auth.reset-password', ['token' => $token, 'email' => $email]);
     }
 
-    //  reset password
+    // Process reset password
     public function resetPassword(Request $request)
     {
         $request->validate([
@@ -165,7 +161,7 @@ class AuthController extends Controller
 
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
-        return redirect()->route('login')->with('status', 'Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter.');
+        return redirect()->route('login.form')->with('status', 'Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter.');
     }
 
     // Show profile

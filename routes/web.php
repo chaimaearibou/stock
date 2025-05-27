@@ -22,7 +22,7 @@ Route::get('/changeLocale/{locale}', function (string $locale) {
      }
     return redirect()->back();
 });
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+// Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/customers', [DashboardController::class, 'customers'])->name('customers.index');
 Route::get('/suppliers', [DashboardController::class, 'suppliers'])->name('suppliers.index');
 // Product routes
@@ -77,8 +77,8 @@ Route::get('products-export', [ProductController::class, 'export'])->name('produ
 Route::post('products-import', [ProductController::class, 'import'])->name('products.import');
 
 // Authentication Routes
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');;
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/', [AuthController::class, 'showLoginForm'])->name('login.form');
+Route::post('/login/submit', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Registration Routes
@@ -97,9 +97,17 @@ Route::get('/password/reset/{token}/{email}', [AuthController::class, 'showReset
 Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // Profile Routes
-Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile');
-Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
-Route::put('/password', [AuthController::class, 'updatePassword'])->name('password.change');
+// Route::get('/profile', [AuthController::class, 'showProfile'])->name('profile');
+// Route::put('/profile', [AuthController::class, 'updateProfile'])->name('profile.update');
+// Route::put('/password', [AuthController::class, 'updatePassword'])->name('password.change');
 
 // Dashboard Route
-// Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
+// * la route fiare un print pdf 
+Route::get('/products/print', [ProductController::class, 'print'])->name('products.print');
+
+
+// * les route des seesion cockies 
+Route::post("/saveCookie", [DashboardController::class, 'saveCookie'])->name("saveCookie");
+Route::post("/saveSession", [DashboardController::class, 'saveSession'])->name("saveSession");
+Route::post("/saveAvatar", [DashboardController::class, 'saveAvatar'])->name("saveAvatar");

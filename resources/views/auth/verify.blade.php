@@ -52,7 +52,7 @@
             <p>Si vous n'avez pas reçu l'e-mail, vous pouvez demander un nouveau lien de vérification.</p>
             
             <div class="links">
-                <a href="{{ route('login') }}">Retour à la connexion</a>
+                <a href="{{ route('login.form') }}">Retour à la connexion</a>
             </div>
         </div>
     </div>

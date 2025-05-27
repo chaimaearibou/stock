@@ -24,6 +24,7 @@ class User extends Authenticatable
         'role',
         'is_active',
         'email_verification_token',
+        'avatar'
     ];
 
     /**
